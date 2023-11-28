@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:test_24_11/view/utils/db.dart';
+import 'package:test_24_11/controller/cart_screen_controller.dart';
+import 'package:test_24_11/model/prodect_model.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -11,12 +12,12 @@ class CartScreen extends StatefulWidget {
 
 class _CartScreenState extends State<CartScreen> {
   List cartItems = [];
-  var box = Hive.box('cartBox');
+  var box = Hive.box<ProductModel>('cart');
 
   @override
   void initState() {
     // TODO: implement initState
-    cartItems = box.get("indexes");
+    cartItems = box.keys.toList();
   }
 
   @override
@@ -51,25 +52,26 @@ class _CartScreenState extends State<CartScreen> {
                               color: Colors.blue,
                               borderRadius: BorderRadius.circular(15),
                               image: DecorationImage(
-                                  image: NetworkImage(Database
-                                      .products[cartItems[index]]["image"]),
+                                  image: NetworkImage(
+                                      box.get(cartItems[index])!.image),
                                   fit: BoxFit.cover)),
                         ),
                         SizedBox(
                           width: 15,
                         ),
                         Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Text(
-                              Database.products[cartItems[index]]["name"],
+                              box.get(cartItems[index])!.title,
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                             Text(
-                              Database.products[cartItems[index]]["price"],
+                              box.get(cartItems[index])!.price.toString(),
                               style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600,
@@ -79,13 +81,42 @@ class _CartScreenState extends State<CartScreen> {
                         )
                       ],
                     ),
-                    IconButton(
-                        onPressed: () {
-                          cartItems.removeAt(index);
-                          box.put('indexes', cartItems);
-                          setState(() {});
-                        },
-                        icon: Icon(Icons.delete))
+                    Column(
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              CartController()
+                                  .deleteItem(ItemKey: cartItems[index]);
+                              cartItems = box.keys.toList();
+                              setState(() {});
+                            },
+                            icon: Icon(Icons.delete)),
+                        Row(
+                          children: [
+                            IconButton(
+                                onPressed: () {
+                                  CartController().decrementQuantity(
+                                      product: box.get(cartItems[index])!,
+                                      itemKey: cartItems[index]);
+                                  setState(() {});
+                                },
+                                icon: Icon(Icons.remove)),
+                            Text(
+                              box.get(cartItems[index])!.quatity.toString(),
+                              style: TextStyle(fontSize: 18),
+                            ),
+                            IconButton(
+                                onPressed: () {
+                                  CartController().incrementQuantity(
+                                      product: box.get(cartItems[index])!,
+                                      itemKey: cartItems[index]);
+                                  setState(() {});
+                                },
+                                icon: Icon(Icons.add)),
+                          ],
+                        )
+                      ],
+                    )
                   ],
                 ),
               );

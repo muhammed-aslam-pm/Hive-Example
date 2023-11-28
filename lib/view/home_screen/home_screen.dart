@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:test_24_11/controller/home_screen_controller.dart';
 import 'package:test_24_11/view/cart_screen/cart_screen.dart';
 import 'package:test_24_11/view/utils/db.dart';
 
@@ -11,9 +12,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  var box = Hive.box('cartBox');
-  List<int> selectedIndexes = [];
-  @override
+  // var box = Hive.box('cart');
+  // List<int> selectedIndexes = [];
+  // @override
   // void initState() {
   //   // TODO: implement initState
   //   selectedIndexes = box.get("indexes");
@@ -112,8 +113,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     Container(
                       decoration: BoxDecoration(
                           image: DecorationImage(
-                              image: NetworkImage(
-                                  Database.products[index]["image"]),
+                              image:
+                                  NetworkImage(Database.products[index].image),
                               fit: BoxFit.cover)),
                       height: 190,
                       width: double.infinity,
@@ -123,19 +124,23 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           IconButton(
                               onPressed: () {
-                                if (selectedIndexes.contains(index)) {
-                                  selectedIndexes.remove(index);
-                                  box.put("indexes", selectedIndexes);
-                                } else {
-                                  selectedIndexes.add(index);
-                                  box.put("indexes", selectedIndexes);
-                                }
-                                print(box.get("indexes"));
+                                // if (selectedIndexes.contains(index)) {
+                                //   selectedIndexes.remove(index);
+                                //   box.put("indexes", selectedIndexes);
+                                // } else {
+                                //   selectedIndexes.add(index);
+                                //   box.put("indexes", selectedIndexes);
+                                // }
+                                // print(box.get("indexes"));
+                                ProductController()
+                                    .addToCart(Database.products[index]);
                                 setState(() {});
                               },
-                              icon: selectedIndexes.contains(index)
-                                  ? Icon(Icons.favorite)
-                                  : Icon(Icons.favorite_border))
+                              icon:
+                                  //  selectedIndexes.contains(index)
+                                  //     ? Icon(Icons.favorite)
+                                  //     : Icon(Icons.favorite_border)
+                                  Icon(Icons.favorite))
                         ],
                       ),
                     ),
@@ -143,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 10,
                     ),
                     Text(
-                      Database.products[index]["name"],
+                      Database.products[index].title,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
@@ -153,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 10,
                     ),
                     Text(
-                      Database.products[index]["price"],
+                      Database.products[index].price.toString(),
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,

@@ -8,7 +8,7 @@ Future<void> main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(ProductModelAdapter());
   // var box = await Hive.openBox('cartBox');
-  var box = await Hive.openBox<ProductModel>('cartBox');
+  var box = await Hive.openBox<ProductModel>('cart');
   runApp(MyApp());
 }
 
